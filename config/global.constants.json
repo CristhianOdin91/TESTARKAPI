@@ -1,0 +1,4 @@
+{
+  "LOG_DIRECTORY": "./logs",
+  "LOG_FILE_NAME": "main.log"
+}
