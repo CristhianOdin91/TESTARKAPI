@@ -5,7 +5,7 @@
   "description": "Ark Test API",
   "scripts": {
     "start": "babel-node --no-warnings ./scripts/start",
-    "start:dev": "nodemon --exec babel-node --no-warnings ./scripts/start",
+    "start:dev": "nodemon --exec babel-node --no-warnings --no-deprecation ./scripts/start",
     "start:prod": "npm run clean & npm run build & npm run serve",
     "test": "jest --watch --detectOpenHandles",
     "serve": "node ./dist/main.bundle",
@@ -24,7 +24,8 @@
     "joi": "^17.3.0",
     "log4js": "^6.3.0",
     "moment": "^2.29.1",
-    "mongoose": "^5.10.15"
+    "mongoose": "^5.10.15",
+    "mongoose-auto-increment": "^5.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.1",

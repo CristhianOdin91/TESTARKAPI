@@ -2,14 +2,16 @@
  * Definición del modelo Task
  */
 import mongoose from 'mongoose'
+import autoIncrement from 'mongoose-auto-increment'
 import Moment from 'moment'
+
+autoIncrement.initialize(mongoose.connection)
 
 const schema = new mongoose.Schema({
   name: String,
   description: String,
   totalTime: Number,
   timeLeft: Number,
-  priority: Number,
   active: {
     type: Boolean,
     default: false
@@ -34,6 +36,8 @@ const schema = new mongoose.Schema({
     currentTime: () => Moment(Moment.now(), 'x').toISOString()
   }
 })
+
+schema.plugin(autoIncrement.plugin, { model: 'Task', field: 'priority', startAt: 1 })
 
 const model = mongoose.model('Task', schema)
 

@@ -1,15 +1,20 @@
 /**
  * Controlador de Tareas
  */
+import { TaskService } from '../services'
+
 class TaskController {
   /**
    * Método encargado de responder con todas las tareas
    * @param {*} req
    * @param {*} res
    */
-  async index (_, res) {
+  async index (req, res) {
+    const taskResponse = await TaskService.getTasks(req.query)
+
     res.json({
-      message: 'Las tareas fueron recuperadas'
+      message: 'Las tareas fueron recuperadas',
+      ...taskResponse
     })
   }
 
@@ -30,8 +35,11 @@ class TaskController {
    * @param {*} res
    */
   async create (req, res) {
+    const data = await TaskService.createTask(req.body)
+
     res.json({
-      message: 'La tarea fue creada'
+      message: 'La tarea fue creada',
+      data
     })
   }
 
