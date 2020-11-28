@@ -15,7 +15,7 @@ router.route(API_CONSTANTS.ARK.ENDPOINTS.TASKS)
 
 router.route(API_CONSTANTS.ARK.ENDPOINTS.TASK)
   .get(TaskController.search)
-  .put(TaskController.update)
+  .patch(TaskController.update)
   .delete(TaskController.destroy)
 
 export { router as taskRoutes }

@@ -37,7 +37,7 @@ const schema = new mongoose.Schema({
   }
 })
 
-schema.plugin(autoIncrement.plugin, { model: 'Task', field: 'priority', startAt: 1 })
+schema.plugin(autoIncrement.plugin, { model: 'Task', field: 'priority', startAt: 1, unique: false })
 
 const model = mongoose.model('Task', schema)
 

@@ -10,11 +10,11 @@ class TaskController {
    * @param {*} res
    */
   async index (req, res) {
-    const taskResponse = await TaskService.getTasks(req.query)
+    const taskPagination = await TaskService.getTasks(req.query)
 
     res.json({
       message: 'Las tareas fueron recuperadas',
-      ...taskResponse
+      ...taskPagination
     })
   }
 
@@ -24,9 +24,21 @@ class TaskController {
    * @param {*} res
    */
   async search (req, res) {
-    res.json({
-      message: 'La tarea fue recuperada'
-    })
+    let data
+
+    try {
+      data = await TaskService.searchTask(req.params.id)
+    } catch (error) {
+      const { message, code } = error
+      res.status(code).json({ message })
+    }
+
+    if (!res.headersSent) {
+      res.json({
+        message: 'La tarea fue recuperada',
+        data
+      })
+    }
   }
 
   /**
@@ -49,9 +61,21 @@ class TaskController {
    * @param {*} res
    */
   async update (req, res) {
-    res.json({
-      message: 'La tarea fue actualizada'
-    })
+    let data
+
+    try {
+      data = await TaskService.updateTask(req.params.id, req.body)
+    } catch (error) {
+      const { message, code } = error
+      res.status(code).json({ message })
+    }
+
+    if (!res.headersSent) {
+      res.json({
+        message: 'La tarea fue actualizada',
+        data
+      })
+    }
   }
 
   /**
@@ -60,6 +84,8 @@ class TaskController {
    * @param {*} res
    */
   async destroy (req, res) {
+    await TaskService.removeTaskFromList(req.params.id)
+
     res.json({
       message: 'La tarea fue eliminada'
     })
