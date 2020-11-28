@@ -19,7 +19,7 @@ app.use(bodyParser.json())
 const DEFAULT_PORT = process.env.PORT || 3000
 const NODE_ENV = process.env.NODE_ENV || 'development'
 
-app.use(API_CONSTANTS.API_AVALUO.URL_BASE, apiRoutes)
+app.use(API_CONSTANTS.ARK.URL_BASE, apiRoutes)
 
 const server = app.listen(DEFAULT_PORT, () => {
   if (NODE_ENV !== 'test') {

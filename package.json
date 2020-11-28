@@ -23,6 +23,7 @@
     "express": "^4.17.1",
     "joi": "^17.3.0",
     "log4js": "^6.3.0",
+    "moment": "^2.29.1",
     "mongoose": "^5.10.15"
   },
   "devDependencies": {

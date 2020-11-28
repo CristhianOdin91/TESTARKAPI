@@ -15,7 +15,7 @@ describe(':::Endpoint de Inicio:::', () => {
     const res = await request(app).get(`${URL_BASE}${ENDPOINTS.HOME}`)
 
     expect(res.statusCode).toEqual(200)
-    expect(res.body.mensaje).toEqual('API REST activa')
+    expect(res.body.message).toEqual('API REST activa')
   })
 
   afterEach(() => {
