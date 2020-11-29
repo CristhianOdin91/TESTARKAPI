@@ -1,6 +1,8 @@
 /**
  * Servicio de Tareas
  */
+import Moment from 'moment-timezone'
+
 import { Task } from '../models'
 import { NotFoundError } from '../errors'
 import { lorem } from '../utils'
@@ -84,18 +86,7 @@ class TaskService {
    * @param {Object} filters
    */
   async updateTask (id, { name, description }) {
-    const task = await Task.findOne({
-      _id: id,
-      erased: false
-    })
-      .select({
-        createdAt: 0,
-        updatedAt: 0
-      })
-
-    if (!task) {
-      throw new NotFoundError('No se encontró la tarea solicitada')
-    }
+    const task = await this.searchTask(id)
 
     task.name = name
     task.description = description || ''
@@ -110,18 +101,7 @@ class TaskService {
    * @param {String} id
    */
   async removeTaskFromList (id) {
-    const task = await Task.findOne({
-      _id: id,
-      erased: false
-    })
-      .select({
-        createdAt: 0,
-        updatedAt: 0
-      })
-
-    if (!task) {
-      throw new NotFoundError('No se encontró la tarea solicitada')
-    }
+    const task = await this.searchTask(id)
 
     task.priority = null
     task.erased = true
@@ -154,6 +134,21 @@ class TaskService {
     }
 
     await Task.create(mockTasks)
+  }
+
+  /**
+   * Método por el que se inicializa una tarea
+   * @param {String} id
+   */
+  async startTask (id) {
+    const task = await this.searchTask(id)
+
+    task.startedAt = task.startedAt || Moment().tz('America/Mexico_City').format()
+    task.active = true
+
+    task.save()
+
+    return task
   }
 }
 
