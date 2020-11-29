@@ -3,7 +3,7 @@
  */
 import mongoose from 'mongoose'
 import autoIncrement from 'mongoose-auto-increment'
-import Moment from 'moment'
+import Moment from 'moment-timezone'
 
 autoIncrement.initialize(mongoose.connection)
 
@@ -24,16 +24,16 @@ const schema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  inList: {
+  erased: {
     type: Boolean,
-    default: true
+    default: false
   },
   startedAt: Date,
   finishedAt: Date
 }, {
   versionKey: false,
   timestamps: {
-    currentTime: () => Moment(Moment.now(), 'x').toISOString()
+    currentTime: () => Moment().tz('America/Mexico_City').format()
   }
 })
 

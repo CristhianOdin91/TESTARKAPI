@@ -84,11 +84,38 @@ class TaskController {
    * @param {*} res
    */
   async destroy (req, res) {
-    await TaskService.removeTaskFromList(req.params.id)
+    try {
+      await TaskService.removeTaskFromList(req.params.id)
+    } catch (error) {
+      const { message, code } = error
+      res.status(code).json({ message })
+    }
 
-    res.json({
-      message: 'La tarea fue eliminada'
-    })
+    if (!res.headersSent) {
+      res.json({
+        message: 'La tarea fue eliminada'
+      })
+    }
+  }
+
+  /**
+   * Método encargado de prellenar la base de datos con tareas aleatorias
+   * @param {*} req
+   * @param {*} res
+   */
+  async randomizer (_, res) {
+    try {
+      await TaskService.randomFill()
+    } catch (error) {
+      const { message, code } = error
+      res.status(code).json({ message })
+    }
+
+    if (!res.headersSent) {
+      res.json({
+        message: 'Las tareas se generaron correctamente'
+      })
+    }
   }
 }
 

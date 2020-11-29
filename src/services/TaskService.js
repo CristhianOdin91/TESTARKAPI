@@ -3,6 +3,7 @@
  */
 import { Task } from '../models'
 import { NotFoundError } from '../errors'
+import { lorem } from '../utils'
 
 class TaskService {
   /**
@@ -18,7 +19,7 @@ class TaskService {
     perPage = perPage || 10
 
     const filters = {
-      inList: true
+      erased: false
     }
 
     const data = await Task.find(filters)
@@ -51,7 +52,7 @@ class TaskService {
   async searchTask (id) {
     const data = await Task.findOne({
       _id: id,
-      inList: true
+      erased: false
     })
       .select({
         createdAt: 0,
@@ -85,7 +86,7 @@ class TaskService {
   async updateTask (id, { name, description }) {
     const task = await Task.findOne({
       _id: id,
-      inList: true
+      erased: false
     })
       .select({
         createdAt: 0,
@@ -111,19 +112,48 @@ class TaskService {
   async removeTaskFromList (id) {
     const task = await Task.findOne({
       _id: id,
-      inList: true
+      erased: false
     })
       .select({
         createdAt: 0,
         updatedAt: 0
       })
 
+    if (!task) {
+      throw new NotFoundError('No se encontró la tarea solicitada')
+    }
+
     task.priority = null
-    task.inList = false
+    task.erased = true
 
     task.save()
 
     return task
+  }
+
+  /**
+   * Método encargado de prellenar la base de datos con tareas aleatorias
+   */
+  async randomFill (finished = true) {
+    const tasksToGenerate = 50
+    const mockTasks = []
+    const validTimes = [1800000, 3600000, 5400000]
+
+    let totalTime
+
+    for (let i = 0; i < tasksToGenerate; i++) {
+      totalTime = validTimes[Math.floor(Math.random() * validTimes.length)]
+
+      mockTasks.push({
+        name: lorem.generateSentences(1),
+        description: lorem.generateSentences(3),
+        totalTime,
+        timeLeft: Math.floor(totalTime * (Math.random() * 0.2)),
+        finished
+      })
+    }
+
+    await Task.create(mockTasks)
   }
 }
 

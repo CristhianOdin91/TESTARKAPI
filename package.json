@@ -23,7 +23,9 @@
     "express": "^4.17.1",
     "joi": "^17.3.0",
     "log4js": "^6.3.0",
+    "lorem-ipsum": "^2.0.3",
     "moment": "^2.29.1",
+    "moment-timezone": "^0.5.32",
     "mongoose": "^5.10.15",
     "mongoose-auto-increment": "^5.0.1"
   },
