@@ -2,7 +2,7 @@ import request from 'supertest'
 
 import { API_CONSTANTS } from '../../src/config'
 
-const { URL_BASE, ENDPOINTS } = API_CONSTANTS.API_AVALUO
+const { URL_BASE, ENDPOINTS } = API_CONSTANTS.ARK
 
 let app, server
 

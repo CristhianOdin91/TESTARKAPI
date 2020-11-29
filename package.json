@@ -27,7 +27,8 @@
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.32",
     "mongoose": "^5.10.15",
-    "mongoose-auto-increment": "^5.0.1"
+    "mongoose-auto-increment": "^5.0.1",
+    "socket.io": "^3.0.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.1",

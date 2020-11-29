@@ -3,6 +3,7 @@ import { cyan, green } from 'chalk'
 import { config as readEnvVars } from 'dotenv'
 import bodyParser from 'body-parser'
 
+import { SocketManager } from './socket'
 import { API_CONSTANTS } from './config'
 import apiRoutes from '../src/routes/api'
 import logger from '../config/logger'
@@ -30,5 +31,7 @@ const server = app.listen(DEFAULT_PORT, () => {
     }
   }
 })
+
+SocketManager(server)
 
 export { app, server }
