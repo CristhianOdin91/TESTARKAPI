@@ -4,10 +4,18 @@
 import Moment from 'moment-timezone'
 
 import { Task } from '../models'
-import { NotFoundError } from '../errors'
+import { NotFoundError, CreateTaskError } from '../errors'
 import { lorem } from '../utils'
 
 class TaskService {
+  constructor () {
+    this.excludedFields = {
+      createdAt: 0,
+      updatedAt: 0,
+      erased: 0
+    }
+  }
+
   /**
    * Método encargado de recuperar todas las tareas
    * @param {Number} page
@@ -25,10 +33,7 @@ class TaskService {
     }
 
     const data = await Task.find(filters)
-      .select({
-        createdAt: 0,
-        updatedAt: 0
-      })
+      .select(this.excludedFields)
       .skip(Number(page - 1) * perPage)
       .limit(Number(perPage))
 
@@ -56,10 +61,7 @@ class TaskService {
       _id: id,
       erased: false
     })
-      .select({
-        createdAt: 0,
-        updatedAt: 0
-      })
+      .select(this.excludedFields)
 
     if (!data) {
       throw new NotFoundError('No se encontró la tarea solicitada')
@@ -76,6 +78,10 @@ class TaskService {
    */
   async createTask ({ name, description, totalTime }) {
     const data = await Task.create({ name, description, totalTime, timeLeft: totalTime })
+
+    if (!data) {
+      throw new CreateTaskError('No se encontró la tarea solicitada')
+    }
 
     return data
   }

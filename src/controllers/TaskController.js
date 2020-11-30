@@ -47,12 +47,23 @@ class TaskController {
    * @param {*} res
    */
   async create (req, res) {
-    const data = await TaskService.createTask(req.body)
+    let task
 
-    res.json({
-      message: 'La tarea fue creada',
-      data
-    })
+    try {
+      task = await TaskService.createTask(req.body)
+    } catch (error) {
+      const { message, code } = error
+      res.status(code).json({ message })
+    }
+
+    const data = { _id: task._id }
+
+    if (!res.headersSent) {
+      res.json({
+        message: 'La tarea fue creada',
+        data
+      })
+    }
   }
 
   /**
@@ -61,14 +72,16 @@ class TaskController {
    * @param {*} res
    */
   async update (req, res) {
-    let data
+    let task
 
     try {
-      data = await TaskService.updateTask(req.params.id, req.body)
+      task = await TaskService.updateTask(req.params.id, req.body)
     } catch (error) {
       const { message, code } = error
       res.status(code).json({ message })
     }
+
+    const data = { _id: task._id }
 
     if (!res.headersSent) {
       res.json({

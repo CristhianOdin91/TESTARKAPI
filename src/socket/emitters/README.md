@@ -1,2 +1,2 @@
-# Events
-Directorio para eventos de entrada y salida en el websocket.
+# Emitters
+Directorio para emisores de eventos de entrada y salida en el websocket.
