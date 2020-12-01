@@ -158,7 +158,7 @@ class TaskService {
 
     task.save()
 
-    return task
+    return { task, timelog }
   }
 
   /**
@@ -187,7 +187,7 @@ class TaskService {
 
     task.save()
 
-    return timelog
+    return { task, timelog }
   }
 }
 

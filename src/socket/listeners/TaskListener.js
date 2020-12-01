@@ -1,6 +1,7 @@
 /**
  * Definición de la clase manejadora de eventos relacionados con las Tareas
  */
+import Moment from 'moment-timezone'
 import { magenta, red } from 'chalk'
 
 import logger from '../../../config/logger'
@@ -14,6 +15,13 @@ class TaskListener {
         play: 'task.play',
         pause: 'task.pause'
       }
+    }
+
+    this.statusInterval = 1000
+
+    this.taskState = {
+      activeTask: '',
+      timerHandler: ''
     }
   }
 
@@ -45,14 +53,22 @@ class TaskListener {
    */
   async play (socket, payload) {
     let task
+    let timelog
     try {
-      task = await TaskService.startTask(payload.id)
+      ({ task, timelog } = await TaskService.startTask(payload.id))
     } catch (error) {
       logger.error(red(error))
     }
 
     const { _id: id, active, name, description, totalTime, timeLeft } = task
     TaskEmitter.emitStartedTask(socket, { id, active, name, description, totalTime, timeLeft })
+
+    this.taskState.activeTask = id
+    this.taskState.timerHandler = setInterval(() => {
+      TaskEmitter.emitTaskStatus(socket, {
+        timeLeft: timeLeft - Math.abs(Moment().tz('America/Mexico_City').diff(Moment(timelog.startedAt)))
+      })
+    }, this.statusInterval)
   }
 
   /**
@@ -61,14 +77,16 @@ class TaskListener {
    * @param {Object} payload
    */
   async pause (socket, payload) {
+    let task
     let timelog
     try {
-      timelog = await TaskService.pauseTask(payload.id)
+      ({ task, timelog } = await TaskService.pauseTask(payload.id))
     } catch (error) {
       logger.error(red(error))
     }
 
-    TaskEmitter.emitPausedTask(socket, timelog)
+    clearInterval(this.taskState.timerHandler)
+    TaskEmitter.emitPausedTask(socket, { task, timelog })
   }
 }
 
