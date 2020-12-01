@@ -5,7 +5,8 @@ class TaskEmitter {
   constructor () {
     this.events = {
       task: {
-        started: 'task.started'
+        started: 'task.started',
+        paused: 'task.paused'
       }
     }
   }
@@ -17,6 +18,15 @@ class TaskEmitter {
    */
   emitStartedTask (socket, payload) {
     socket.emit(this.events.task.started, payload)
+  }
+
+  /**
+   * Método encargado de emitir la respuesta a la tarea recién pausada
+   * @param {*} socket
+   * @param {Object} payload
+   */
+  emitPausedTask (socket, payload) {
+    socket.emit(this.events.task.paused, payload)
   }
 }
 

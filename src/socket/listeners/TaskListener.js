@@ -1,7 +1,7 @@
 /**
  * Definición de la clase manejadora de eventos relacionados con las Tareas
  */
-import { magenta } from 'chalk'
+import { magenta, red } from 'chalk'
 
 import logger from '../../../config/logger'
 import { TaskService } from '../../services'
@@ -9,9 +9,12 @@ import { TaskEmitter } from '../emitters'
 
 class TaskListener {
   constructor () {
-    this.events = [
-      'task.play'
-    ]
+    this.events = {
+      task: {
+        play: 'task.play',
+        pause: 'task.pause'
+      }
+    }
   }
 
   /**
@@ -23,11 +26,8 @@ class TaskListener {
 
     socket.on('disconnect', () => this.disconnect(socket))
 
-    let method
-    this.events.forEach(event => {
-      method = event.split('.')[1]
-      socket.on(event, payload => this[method](socket, payload))
-    })
+    socket.on(this.events.task.play, payload => this.play(socket, payload))
+    socket.on(this.events.task.pause, payload => this.pause(socket, payload))
   }
 
   /**
@@ -47,10 +47,28 @@ class TaskListener {
     let task
     try {
       task = await TaskService.startTask(payload.id)
-    } catch (error) {}
+    } catch (error) {
+      logger.error(red(error))
+    }
 
     const { _id: id, active, name, description, totalTime, timeLeft } = task
     TaskEmitter.emitStartedTask(socket, { id, active, name, description, totalTime, timeLeft })
+  }
+
+  /**
+   * Método encargado de pausar el temporizador de una tarea
+   * @param {*} socket
+   * @param {Object} payload
+   */
+  async pause (socket, payload) {
+    let timelog
+    try {
+      timelog = await TaskService.pauseTask(payload.id)
+    } catch (error) {
+      logger.error(red(error))
+    }
+
+    TaskEmitter.emitPausedTask(socket, timelog)
   }
 }
 

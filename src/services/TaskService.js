@@ -3,7 +3,7 @@
  */
 import Moment from 'moment-timezone'
 
-import { Task } from '../models'
+import { Task, Timelog } from '../models'
 import { NotFoundError, CreateTaskError } from '../errors'
 import { lorem } from '../utils'
 
@@ -149,12 +149,45 @@ class TaskService {
   async startTask (id) {
     const task = await this.searchTask(id)
 
-    task.startedAt = task.startedAt || Moment().tz('America/Mexico_City').format()
+    const startedAt = Moment().tz('America/Mexico_City')
+    task.startedAt = task.startedAt || startedAt
     task.active = true
+
+    const timelog = await Timelog.create({ task: task._id, startedAt })
+    task.timelogs.push(timelog._id)
 
     task.save()
 
     return task
+  }
+
+  /**
+   * Método encargado de pausar el registro de tiempo de una tarea
+   * @param {String} id
+   */
+  async pauseTask (id) {
+    const task = await this.searchTask(id)
+    const lastTimelog = [...task.timelogs].pop()
+    const timelog = await Timelog.findById(lastTimelog)
+
+    if (!timelog) {
+      throw new NotFoundError('No se encontró el registro de tiempo solicitado')
+    }
+
+    const currentTime = Moment().tz('America/Mexico_City')
+    const pastTime = Moment(timelog.startedAt)
+
+    timelog.finishedAt = currentTime.format()
+    timelog.elapsedTime = Math.abs(currentTime.diff(pastTime))
+
+    timelog.save()
+
+    task.paused = true
+    task.timeLeft = task.timeLeft - timelog.elapsedTime
+
+    task.save()
+
+    return timelog
   }
 }
 

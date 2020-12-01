@@ -1,13 +1,13 @@
 /**
  * Definición del modelo Task
  */
-import mongoose from 'mongoose'
+import mongoose, { Schema } from 'mongoose'
 import autoIncrement from 'mongoose-auto-increment'
 import Moment from 'moment-timezone'
 
 autoIncrement.initialize(mongoose.connection)
 
-const schema = new mongoose.Schema({
+const schema = new Schema({
   name: String,
   description: String,
   totalTime: Number,
@@ -29,7 +29,13 @@ const schema = new mongoose.Schema({
     default: false
   },
   startedAt: Date,
-  finishedAt: Date
+  finishedAt: Date,
+  timelogs: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Timelog'
+    }
+  ]
 }, {
   versionKey: false,
   timestamps: {
