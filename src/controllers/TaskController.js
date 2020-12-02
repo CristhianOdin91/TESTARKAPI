@@ -130,6 +130,29 @@ class TaskController {
       })
     }
   }
+
+  /**
+   * Método encargado de responder con la Tarea en curso
+   * @param {*} req
+   * @param {*} res
+   */
+  async active (_, res) {
+    let data
+
+    try {
+      data = await TaskService.getActiveTask()
+    } catch (error) {
+      const { message, code } = error
+      res.status(code).json({ message })
+    }
+
+    if (!res.headersSent) {
+      res.json({
+        message: 'La tarea fue recuperada',
+        data
+      })
+    }
+  }
 }
 
 const obj = new TaskController()

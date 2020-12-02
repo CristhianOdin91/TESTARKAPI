@@ -7,6 +7,7 @@ import { magenta, red } from 'chalk'
 import logger from '../../../config/logger'
 import { TaskService } from '../../services'
 import { TaskEmitter } from '../emitters'
+import { NotFoundError } from '../../errors'
 
 class TaskListener {
   constructor () {
@@ -46,8 +47,27 @@ class TaskListener {
    * Método encargado de gestionar la desconexión al socket
    * @param {*} socket
    */
-  disconnect (socket) {
+  async disconnect (socket) {
     logger.info(magenta(`El usuario con ID ${socket.id} ha sido desconectado`))
+
+    let activeTask
+
+    try {
+      activeTask = await TaskService.getActiveTask()
+
+      const { _id: id } = activeTask
+      await TaskService.pauseTask(id)
+
+      logger.info(magenta(`La Tarea con ID ${id} ha sido pausada`))
+    } catch (error) {
+      const { message } = error
+
+      if (error instanceof NotFoundError) {
+        logger.info(magenta(message))
+      } else {
+        logger.error(red(message))
+      }
+    }
   }
 
   /**

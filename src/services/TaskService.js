@@ -58,17 +58,34 @@ class TaskService {
    * @param {String} id
    */
   async searchTask (id) {
-    const data = await Task.findOne({
+    const task = await Task.findOne({
       _id: id,
       erased: false
     })
       .select(this.excludedFields)
 
-    if (!data) {
+    if (!task) {
       throw new NotFoundError('No se encontró la tarea solicitada')
     }
 
-    return data
+    return task
+  }
+
+  /**
+   * Método encargado de recuperar la Tarea en curso
+   */
+  async getActiveTask () {
+    const task = await Task.findOne({
+      erased: false,
+      active: true
+    })
+      .select(this.excludedFields)
+
+    if (!task) {
+      throw new NotFoundError('Ninguna tarea se encuentra en curso')
+    }
+
+    return task
   }
 
   /**

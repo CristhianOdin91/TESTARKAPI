@@ -8,7 +8,8 @@ export const API_CONSTANTS = {
       HOME: '/',
       TASKS: '/task',
       TASK: '/task/:id',
-      TASKS_RANDOMIZER: '/task/randomizer'
+      TASKS_RANDOMIZER: '/task/randomizer',
+      TASK_ACTIVE: '/task/active'
     }
   }
 }
