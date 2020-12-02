@@ -13,7 +13,9 @@ class TaskListener {
     this.events = {
       task: {
         play: 'task.play',
-        pause: 'task.pause'
+        pause: 'task.pause',
+        stop: 'task.stop',
+        finish: 'task.finish'
       }
     }
 
@@ -36,6 +38,8 @@ class TaskListener {
 
     socket.on(this.events.task.play, payload => this.play(socket, payload))
     socket.on(this.events.task.pause, payload => this.pause(socket, payload))
+    socket.on(this.events.task.stop, payload => this.stop(socket, payload))
+    socket.on(this.events.task.finish, payload => this.finish(socket, payload))
   }
 
   /**
@@ -87,6 +91,42 @@ class TaskListener {
 
     clearInterval(this.taskState.timerHandler)
     TaskEmitter.emitPausedTask(socket, { task, timelog })
+  }
+
+  /**
+   * Método encargado de detener la tarea en curso
+   * @param {*} socket
+   * @param {Object} payload
+   */
+  async stop (socket, payload) {
+    let task
+    let timelog
+    try {
+      ({ task, timelog } = await TaskService.stopTask(payload.id))
+    } catch (error) {
+      logger.error(red(error))
+    }
+
+    clearInterval(this.taskState.timerHandler)
+    TaskEmitter.emitStoppedTask(socket, { task, timelog })
+  }
+
+  /**
+   * Método encargado de finalizar la tarea en curso
+   * @param {*} socket
+   * @param {Object} payload
+   */
+  async finish (socket, payload) {
+    let task
+    let timelog
+    try {
+      ({ task, timelog } = await TaskService.finishTask(payload.id))
+    } catch (error) {
+      logger.error(red(error))
+    }
+
+    clearInterval(this.taskState.timerHandler)
+    TaskEmitter.emitFinishedTask(socket, { task, timelog })
   }
 }
 

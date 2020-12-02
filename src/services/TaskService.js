@@ -3,7 +3,8 @@
  */
 import Moment from 'moment-timezone'
 
-import { Task, Timelog } from '../models'
+import { TimelogService } from './TimelogService'
+import { Task } from '../models'
 import { NotFoundError, CreateTaskError } from '../errors'
 import { lorem } from '../utils'
 
@@ -53,7 +54,7 @@ class TaskService {
   }
 
   /**
-   * Método encargado de buscar una tarea
+   * Método encargado de buscar una Tarea
    * @param {String} id
    */
   async searchTask (id) {
@@ -80,7 +81,7 @@ class TaskService {
     const data = await Task.create({ name, description, totalTime, timeLeft: totalTime })
 
     if (!data) {
-      throw new CreateTaskError('No se encontró la tarea solicitada')
+      throw new CreateTaskError('Se produjo un error al crear la tarea')
     }
 
     return data
@@ -153,7 +154,7 @@ class TaskService {
     task.startedAt = task.startedAt || startedAt
     task.active = true
 
-    const timelog = await Timelog.create({ task: task._id, startedAt })
+    const timelog = await TimelogService.createTimelog({ task: task._id, startedAt })
     task.timelogs.push(timelog._id)
 
     task.save()
@@ -168,22 +169,60 @@ class TaskService {
   async pauseTask (id) {
     const task = await this.searchTask(id)
     const lastTimelog = [...task.timelogs].pop()
-    const timelog = await Timelog.findById(lastTimelog)
+    const timelog = await TimelogService.searchTimelog(lastTimelog)
 
-    if (!timelog) {
-      throw new NotFoundError('No se encontró el registro de tiempo solicitado')
-    }
-
-    const currentTime = Moment().tz('America/Mexico_City')
-    const pastTime = Moment(timelog.startedAt)
-
-    timelog.finishedAt = currentTime.format()
-    timelog.elapsedTime = Math.abs(currentTime.diff(pastTime))
-
-    timelog.save()
+    TimelogService.finishTimelog(timelog)
 
     task.paused = true
     task.timeLeft = task.timeLeft - timelog.elapsedTime
+
+    task.save()
+
+    return { task, timelog }
+  }
+
+  /**
+   * Método encargado de detener el registro de tiempo de una tarea
+   * @param {String} id
+   */
+  async stopTask (id) {
+    const task = await this.searchTask(id)
+    const lastTimelog = [...task.timelogs].pop()
+    const timelog = await TimelogService.searchTimelog(lastTimelog)
+
+    if (!timelog.finishedAt) {
+      TimelogService.finishTimelog(timelog)
+
+      task.timeLeft = task.timeLeft - timelog.elapsedTime
+    }
+
+    task.active = false
+    task.paused = false
+
+    task.save()
+
+    return { task, timelog }
+  }
+
+  /**
+   * Método encargado de dar por finalizada una tarea
+   * @param {String} id
+   */
+  async finishTask (id) {
+    const task = await this.searchTask(id)
+    const lastTimelog = [...task.timelogs].pop()
+    const timelog = await TimelogService.searchTimelog(lastTimelog)
+
+    if (!timelog.finishedAt) {
+      TimelogService.finishTimelog(timelog)
+
+      task.timeLeft = task.timeLeft - timelog.elapsedTime
+    }
+
+    task.active = false
+    task.paused = false
+    task.finished = true
+    task.finishedAt = Moment().tz('America/Mexico_City')
 
     task.save()
 

@@ -7,7 +7,9 @@ class TaskEmitter {
       task: {
         started: 'task.started',
         status: 'task.status',
-        paused: 'task.paused'
+        paused: 'task.paused',
+        stopped: 'task.stopped',
+        finished: 'task.finished'
       }
     }
   }
@@ -37,6 +39,24 @@ class TaskEmitter {
    */
   emitPausedTask (socket, payload) {
     socket.emit(this.events.task.paused, payload)
+  }
+
+  /**
+   * Método encargado de emitir la respuesta a la tarea recién pausada
+   * @param {*} socket
+   * @param {Object} payload
+   */
+  emitStoppedTask (socket, payload) {
+    socket.emit(this.events.task.stopped, payload)
+  }
+
+  /**
+   * Método encargado de emitir la respuesta a la tarea recién finalizada
+   * @param {*} socket
+   * @param {Object} payload
+   */
+  emitFinishedTask (socket, payload) {
+    socket.emit(this.events.task.finished, payload)
   }
 }
 
