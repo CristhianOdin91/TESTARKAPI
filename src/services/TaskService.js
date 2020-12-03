@@ -28,9 +28,11 @@ class TaskService {
   async getTasks ({ page, perPage, name, totalTime, finished }) {
     page = page || 1
     perPage = perPage || 10
+    finished = finished || false
 
     const filters = {
-      erased: false
+      erased: false,
+      finished
     }
 
     const data = await Task.find(filters)
@@ -240,6 +242,7 @@ class TaskService {
     task.paused = false
     task.finished = true
     task.finishedAt = Moment().tz('America/Mexico_City')
+    task.priority = null
 
     task.save()
 

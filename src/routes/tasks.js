@@ -15,6 +15,7 @@ router.route(API_CONSTANTS.ARK.ENDPOINTS.TASKS)
   .post(TaskValidator.validateCreation, TaskController.create)
 
 router.get(API_CONSTANTS.ARK.ENDPOINTS.TASK_ACTIVE, TaskController.active)
+router.get(API_CONSTANTS.ARK.ENDPOINTS.TASKS_FINISHED, TaskController.getFinished)
 router.post(API_CONSTANTS.ARK.ENDPOINTS.TASKS_RANDOMIZER, TaskController.randomizer)
 
 router.route(API_CONSTANTS.ARK.ENDPOINTS.TASK)

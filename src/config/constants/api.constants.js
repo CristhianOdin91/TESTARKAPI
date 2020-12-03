@@ -7,8 +7,9 @@ export const API_CONSTANTS = {
     ENDPOINTS: {
       HOME: '/',
       TASKS: '/task',
-      TASK: '/task/:id',
       TASKS_RANDOMIZER: '/task/randomizer',
+      TASKS_FINISHED: '/task/finished',
+      TASK: '/task/:id',
       TASK_ACTIVE: '/task/active'
     }
   }

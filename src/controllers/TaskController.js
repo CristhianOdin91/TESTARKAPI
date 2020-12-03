@@ -10,7 +10,14 @@ class TaskController {
    * @param {*} res
    */
   async index (req, res) {
-    const taskPagination = await TaskService.getTasks(req.query)
+    const page = req.query || 1
+    const perPage = req.perPage || 10
+
+    const taskPagination = await TaskService.getTasks({
+      page,
+      perPage,
+      finished: false
+    })
 
     res.json({
       message: 'Las tareas fueron recuperadas',
@@ -152,6 +159,27 @@ class TaskController {
         data
       })
     }
+  }
+
+  /**
+   * Método encargado de responder con las tareas finalizadas
+   * @param {*} req
+   * @param {*} res
+   */
+  async getFinished (req, res) {
+    const page = req.query || 1
+    const perPage = req.perPage || 10
+
+    const taskPagination = await TaskService.getTasks({
+      page,
+      perPage,
+      finished: true
+    })
+
+    res.json({
+      message: 'Las tareas fueron recuperadas',
+      ...taskPagination
+    })
   }
 }
 
