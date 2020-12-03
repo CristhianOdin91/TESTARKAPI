@@ -1,0 +1,61 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Ark Test API",
+    "description": "Ark Test - Aplicación de Productividad",
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "{server}:{port}/{basePath}",
+      "variables": {
+        "server": {
+          "enum": ["http://127.0.0.1"],
+          "default": "http://127.0.0.1"
+        },
+        "port": {
+          "enum": ["3000", "3001"],
+          "default": "3001"
+        },
+        "basePath": {
+          "enum": ["api/ark/v1.0.0"],
+          "default": "api/ark/v1.0.0"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Home",
+        "description": "Ruta Inicial",
+        "operationId": "Home",
+        "tags": ["Inicio"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Message": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
