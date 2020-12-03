@@ -15,7 +15,7 @@ class TaskValidator {
     const schema = Joi.object().keys({
       name: Joi.string().required(),
       description: Joi.string(),
-      totalTime: Joi.number().positive().required()
+      totalTime: Joi.number().positive().min(1).max(7200000).required()
     })
 
     const { error } = schema.validate(req.body, {

@@ -27,10 +27,10 @@
   "paths": {
     "/": {
       "get": {
-        "summary": "Home",
+        "summary": "Inicio",
         "description": "Ruta Inicial",
-        "operationId": "Home",
-        "tags": ["Inicio"],
+        "operationId": "Inicio",
+        "tags": ["Home"],
         "responses": {
           "200": {
             "description": "OK",
@@ -38,6 +38,184 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/task": {
+      "post": {
+        "summary": "Crear una Tarea",
+        "description": "Crea una Tarea a partir de las propiedades mínimas requeridas",
+        "operationId": "Task.Create",
+        "tags": ["Tasks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Task.Create"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message.DataObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Tareas Pendientes",
+        "description": "Recupera las Tareas Pendientes",
+        "operationId": "Task.Pending",
+        "tags": ["Tasks"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message.Data"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/task/finished": {
+      "get": {
+        "summary": "Tareas Finalizadas",
+        "description": "Recupera las Tareas Finalizadas",
+        "operationId": "Task.Finished",
+        "tags": ["Tasks"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message.Data"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/task/{id}": {
+      "get": {
+        "summary": "Tarea por ID",
+        "description": "Recupera las Tarea con el ID proporcionado",
+        "operationId": "Task.ID",
+        "tags": ["Tasks"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Task ID",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message.DataObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Actualizar una Tarea",
+        "description": "Actualiza una Tarea a partir de las propiedades mínimas requeridas",
+        "operationId": "Task.Update",
+        "tags": ["Tasks"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Task ID",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Task.Update"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message.DataObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar una Tarea",
+        "description": "Elimina una Tarea",
+        "operationId": "Task.Delete",
+        "tags": ["Tasks"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Task ID",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/task/active": {
+      "get": {
+        "summary": "Tarea en Curso",
+        "description": "Recupera las Tarea en Curso en caso de existir alguna",
+        "operationId": "Task.Active",
+        "tags": ["Tasks"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message.DataObject"
                 }
               }
             }
@@ -52,6 +230,55 @@
         "type": "object",
         "properties": {
           "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Message.Data": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array"
+          }
+        }
+      },
+      "Message.DataObject": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "Task.Create": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "totalTime": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 7200000
+          }
+        }
+      },
+      "Task.Update": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
             "type": "string"
           }
         }
