@@ -3,6 +3,7 @@ import { cyan, green } from 'chalk'
 import { config as readEnvVars } from 'dotenv'
 import bodyParser from 'body-parser'
 import swaggerUi from 'swagger-ui-express'
+import cors from 'cors'
 
 import swaggerDocument from './swagger.json'
 import { SocketManager } from './socket'
@@ -16,6 +17,7 @@ require('./datasources/MongoDBManager')
 
 const app = express()
 
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
