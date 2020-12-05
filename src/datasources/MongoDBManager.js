@@ -8,13 +8,17 @@ class MongoDBManager {
     this.password = process.env.MONGO_PASSWORD || ''
     this.port = process.env.MONGO_PORT || '27017'
 
+    const hasUserAndPassword = (this.user && this.password)
+
     this.uri = process.env.MONGO_URI
       ? process.env.MONGO_URI
       : `mongodb://${this.user}${
-        (this.user && this.password) ? ':' : ''
+        hasUserAndPassword ? ':' : ''
         }${this.password}${
           this.user ? '@' : ''
-        }${this.host}:${this.port}/${this.dataBase}`
+        }${this.host}:${this.port}/${this.dataBase}${
+          hasUserAndPassword ? '?authSource=admin' : ''
+        }`
   }
 
   init () {

@@ -10,8 +10,8 @@
       "url": "{server}:{port}/{basePath}",
       "variables": {
         "server": {
-          "enum": ["http://127.0.0.1"],
-          "default": "http://127.0.0.1"
+          "enum": ["http://localhost", "http://127.0.0.1", "http://185.253.154.71"],
+          "default": "http://localhost"
         },
         "port": {
           "enum": ["3000", "3001"],
