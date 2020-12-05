@@ -123,9 +123,11 @@ class TaskController {
    * @param {*} req
    * @param {*} res
    */
-  async randomizer (_, res) {
+  async randomizer (req, res) {
+    const finished = !(req.query.finished === 'false')
+
     try {
-      await TaskService.randomFill()
+      await TaskService.randomFill(finished)
     } catch (error) {
       const { message, code } = error
       res.status(code).json({ message })

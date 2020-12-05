@@ -39,6 +39,9 @@ class TaskService {
       .select(this.excludedFields)
       .skip(Number(page - 1) * perPage)
       .limit(Number(perPage))
+      .sort({
+        priority: 1
+      })
 
     const total = await Task.find(filters).countDocuments()
     const currentPage = Number(page)
@@ -129,7 +132,7 @@ class TaskService {
   async removeTaskFromList (id) {
     const task = await this.searchTask(id)
 
-    task.priority = null
+    task.priority = 0
     task.erased = true
 
     task.save()
@@ -139,24 +142,36 @@ class TaskService {
 
   /**
    * Método encargado de prellenar la base de datos con tareas aleatorias
+   * @param {Boolean} finished
+   * @param {Number} tasksToGenerate
    */
-  async randomFill (finished = true) {
-    const tasksToGenerate = 50
+  async randomFill (finished = true, tasksToGenerate = 50) {
     const mockTasks = []
     const validTimes = [1800000, 3600000, 5400000]
 
     let totalTime
+    let timeLeft
+    let mockTask
 
     for (let i = 0; i < tasksToGenerate; i++) {
       totalTime = validTimes[Math.floor(Math.random() * validTimes.length)]
+      timeLeft = finished ? Math.floor(totalTime * (Math.random() * 0.2)) : totalTime
 
-      mockTasks.push({
+      mockTask = {
         name: lorem.generateSentences(1),
         description: lorem.generateSentences(3),
         totalTime,
-        timeLeft: Math.floor(totalTime * (Math.random() * 0.2)),
+        timeLeft,
         finished
-      })
+      }
+
+      if (finished) {
+        mockTask.priority = 0
+        mockTask.startedAt = Moment().tz('America/Mexico_City')
+        mockTask.finishedAt = Moment().tz('America/Mexico_City')
+      }
+
+      mockTasks.push(mockTask)
     }
 
     await Task.create(mockTasks)
@@ -242,7 +257,7 @@ class TaskService {
     task.paused = false
     task.finished = true
     task.finishedAt = Moment().tz('America/Mexico_City')
-    task.priority = null
+    task.priority = 0
 
     task.save()
 
