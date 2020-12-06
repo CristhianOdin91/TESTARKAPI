@@ -8,6 +8,7 @@ import logger from '../../../config/logger'
 import { TaskService } from '../../services'
 import { TaskEmitter } from '../emitters'
 import { NotFoundError } from '../../errors'
+import { getCurrentTime } from '../../utils'
 
 class TaskListener {
   constructor () {
@@ -90,7 +91,7 @@ class TaskListener {
     this.taskState.activeTask = id
     this.taskState.timerHandler = setInterval(() => {
       TaskEmitter.emitTaskStatus(socket, {
-        timeLeft: timeLeft - Math.abs(Moment().tz('America/Mexico_City').diff(Moment(timelog.startedAt)))
+        timeLeft: timeLeft - Math.abs(getCurrentTime().diff(Moment(timelog.startedAt)))
       })
     }, this.statusInterval)
   }

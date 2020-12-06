@@ -1,3 +1,6 @@
+/**
+ * Funciones para generar textos aleatorios
+ */
 import { LoremIpsum } from 'lorem-ipsum'
 
 const lorem = new LoremIpsum({

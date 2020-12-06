@@ -2,7 +2,8 @@
  * Definición del modelo Timelog
  */
 import mongoose, { Schema } from 'mongoose'
-import Moment from 'moment-timezone'
+
+import { getCurrentTime } from '../utils'
 
 const schema = new Schema({
   task: {
@@ -15,7 +16,7 @@ const schema = new Schema({
 }, {
   versionKey: false,
   timestamps: {
-    currentTime: () => Moment().tz('America/Mexico_City').format()
+    currentTime: () => getCurrentTime().format()
   }
 })
 

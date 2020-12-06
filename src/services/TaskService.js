@@ -5,8 +5,8 @@ import Moment from 'moment-timezone'
 
 import { TimelogService } from './TimelogService'
 import { Task } from '../models'
-import { NotFoundError, CreateTaskError } from '../errors'
-import { lorem } from '../utils'
+import { NotFoundError, CreateTaskError, MaxRandomTasks } from '../errors'
+import { lorem, getCurrentTime, getLastWeek, getYesterday, randomDate } from '../utils'
 
 class TaskService {
   constructor () {
@@ -146,12 +146,22 @@ class TaskService {
    * @param {Number} tasksToGenerate
    */
   async randomFill (finished = true, tasksToGenerate = 50) {
-    const mockTasks = []
+    const total = await Task.find({
+      erased: false,
+      finished
+    }).countDocuments()
+
+    if (total >= 500) {
+      throw new MaxRandomTasks(`Se alcanzó el número máximo de tareas ${finished ? 'finalizadas' : 'pendientes'} permitidas`)
+    }
+
     const validTimes = [1800000, 3600000, 5400000]
 
     let totalTime
     let timeLeft
     let mockTask
+    let createdTask
+    let timelog
 
     for (let i = 0; i < tasksToGenerate; i++) {
       totalTime = validTimes[Math.floor(Math.random() * validTimes.length)]
@@ -167,14 +177,18 @@ class TaskService {
 
       if (finished) {
         mockTask.priority = 0
-        mockTask.startedAt = Moment().tz('America/Mexico_City')
-        mockTask.finishedAt = Moment().tz('America/Mexico_City')
+        mockTask.startedAt = randomDate(getLastWeek(), getYesterday())
+        mockTask.finishedAt = Moment(mockTask.startedAt).add(totalTime - timeLeft, 'ms')
       }
 
-      mockTasks.push(mockTask)
-    }
+      createdTask = await Task.create(mockTask)
 
-    await Task.create(mockTasks)
+      if (finished) {
+        timelog = await TimelogService.createFinishedTimelogFromTask(createdTask)
+        createdTask.timelogs.push(timelog._id)
+        createdTask.save()
+      }
+    }
   }
 
   /**
@@ -184,7 +198,7 @@ class TaskService {
   async startTask (id) {
     const task = await this.searchTask(id)
 
-    const startedAt = Moment().tz('America/Mexico_City')
+    const startedAt = getCurrentTime()
     task.startedAt = task.startedAt || startedAt
     task.active = true
 
@@ -256,7 +270,7 @@ class TaskService {
     task.active = false
     task.paused = false
     task.finished = true
-    task.finishedAt = Moment().tz('America/Mexico_City')
+    task.finishedAt = getCurrentTime()
     task.priority = 0
 
     task.save()

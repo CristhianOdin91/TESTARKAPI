@@ -5,6 +5,7 @@ import Moment from 'moment-timezone'
 
 import { Timelog } from '../models'
 import { CreateTimelogError, NotFoundError } from '../errors'
+import { getCurrentTime } from '../utils'
 
 class TimelogService {
   /**
@@ -14,6 +15,23 @@ class TimelogService {
    */
   async createTimelog ({ task, startedAt }) {
     const timelog = await Timelog.create({ task: task._id, startedAt })
+
+    if (!timelog) {
+      throw new CreateTimelogError('Se produjo un error al crear el registro de tiempo')
+    }
+
+    return timelog
+  }
+
+  /**
+   * Método encargado de crear un nuevo Registro de Tiempo a partir de una Tarea finalizada
+   * @param {Task} finishedTask
+   */
+  async createFinishedTimelogFromTask (finishedTask) {
+    const { _id: task, startedAt, finishedAt, totalTime, timeLeft } = finishedTask
+    const elapsedTime = totalTime - timeLeft
+
+    const timelog = await Timelog.create({ task, startedAt, finishedAt, elapsedTime })
 
     if (!timelog) {
       throw new CreateTimelogError('Se produjo un error al crear el registro de tiempo')
@@ -41,7 +59,7 @@ class TimelogService {
    * @param {Timelog} timelog
    */
   finishTimelog (timelog) {
-    const currentTime = Moment().tz('America/Mexico_City')
+    const currentTime = getCurrentTime()
     const pastTime = Moment(timelog.startedAt)
 
     timelog.finishedAt = currentTime.format()

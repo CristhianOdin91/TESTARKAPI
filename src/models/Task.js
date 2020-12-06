@@ -3,7 +3,8 @@
  */
 import mongoose, { Schema } from 'mongoose'
 import autoIncrement from 'mongoose-auto-increment'
-import Moment from 'moment-timezone'
+
+import { getCurrentTime } from '../utils'
 
 autoIncrement.initialize(mongoose.connection)
 
@@ -39,7 +40,7 @@ const schema = new Schema({
 }, {
   versionKey: false,
   timestamps: {
-    currentTime: () => Moment().tz('America/Mexico_City').format()
+    currentTime: () => getCurrentTime().format()
   }
 })
 
