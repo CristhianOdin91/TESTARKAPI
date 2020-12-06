@@ -218,6 +218,36 @@
           }
         }
       }
+    },
+    "/task/randomizer": {
+      "post": {
+        "summary": "Genera Tareas Aleatorias",
+        "description": "Genera Tareas Finalizadas de manera aleatoria, es posible generar Tareas Pendientes si se agrega el query parameter ?finished=false",
+        "operationId": "Task.Randomizer",
+        "tags": ["Tasks"],
+        "parameters": [
+          {
+            "name": "finished",
+            "in": "query",
+            "description": "Determina si se generan Tareas Finalizadas o Pendientes",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
